@@ -1,167 +1,173 @@
-# Comprar ntradas de Cine
+# Sistema de Gestión de Venta de Entradas de Cine
 
 ## Descripción General
 
-Este proyecto consiste en una aplicación de consola desarrollada en Java para gestionar la venta de entradas de cine. Hemos utilizado una arquitectura MVC (Modelo-Vista-Controlador) para organizar el código y una base de datos MySQL para guardar toda la información.
+Aplicación de consola desarrollada en Java que implementa un sistema completo de gestión de venta de entradas de cine. El proyecto utiliza una arquitectura MVC (Modelo-Vista-Controlador) con integración a base de datos MySQL para la persistencia de datos.
 
-El objetivo principal es simular un sistema real donde los clientes pueden registrarse, ver la cartelera, elegir asientos y comprar entradas, aplicándose descuentos automáticos según la cantidad de sesiones.
+El sistema simula un entorno real de venta de entradas donde los clientes pueden registrarse, consultar la cartelera, seleccionar asientos y adquirir entradas con descuentos automáticos según el volumen de compra.
 
 ## Funcionalidades Principales
 
 ### Gestión de Usuarios
 
-Registro de nuevos clientes con validación de datos (DNI, email, contraseña)
-Sistema de login seguro con encriptación de contraseñas
-Validación de email (solo Gmail)
-Verificación de datos duplicados en base de datos
+- Registro de nuevos clientes con validación de datos (DNI, email, contraseña)
+- Sistema de autenticación con encriptación AES de contraseñas
+- Validación de formato de correo electrónico
+- Verificación de unicidad de datos en base de datos
 
 ### Consulta de Películas y Sesiones
 
-Visualización de películas disponibles con información (duración, género)
-Filtrado de películas por fechas disponibles
-Consulta de sesiones por película y fecha
-Información de salas con capacidad de asientos disponibles
-Visualización de precios por sesión
+- Visualización de catálogo de películas con información detallada (duración, género)
+- Filtrado dinámico de películas por fechas disponibles
+- Consulta de sesiones por película y fecha
+- Información en tiempo real de disponibilidad de asientos por sala
+- Visualización de precios por sesión
 
 ### Sistema de Carrito y Compra
 
-Añadir múltiples entradas al carrito desde diferentes sesiones
-Cálculo automático de descuentos (20% para 2 sesiones, 30% para 3 o más)
-Resumen detallado de compra antes de confirmar
-Cálculo de IVA (21%) al finalizar
-Cancelación de reservas si no se confirma la compra
+- Gestión de carrito con múltiples entradas de diferentes sesiones
+- Cálculo automático de descuentos progresivos (20% para 2 sesiones, 30% para 3 o más)
+- Generación de resumen detallado previo a la confirmación
+- Aplicación automática de IVA (21%)
+- Sistema de cancelación de reservas no confirmadas
 
 ### Gestión de Entradas
 
-Generación de entradas para cada compra
-Actualización de aforo de salas
-Guardado de tickets en archivo
-Detalles completos de cada entrada (película, fecha, hora, sala, precio)
+- Generación automática de tickets por compra
+- Actualización en tiempo real del aforo de salas
+- Persistencia de tickets en sistema de archivos
+- Registro completo de información por entrada (película, fecha, hora, sala, precio)
 
 ## Estructura del Proyecto
 
-El proyecto sigue la arquitectura MVC dividida en tres capas principales:
+El proyecto implementa la arquitectura MVC dividida en tres capas principales:
 
 ### Modelo (`src/modelo/`)
 
-Contiene las clases que representan los objetos del negocio:
+Contiene las clases de dominio que representan los objetos del negocio:
 
-`ClienteAcesso.java` Información del cliente registrado
-`Pelicula.java` Datos de películas
-`Sala.java` Información de salas con capacidad de asientos
-`Sesion.java` Sesiones de cine con fecha, hora y precio
-`Carrito.java` Carrito de compra con gestión de precios y descuentos
-`Ticket.java` Información de entradas compradas
-`GestorCine.java` Clase controladora de lógica de negocio
-`GestorTicket.java` Gestión de guardado de tickets
-`EspectadoresSesion.java` Registro de espectadores por sesión
-`dniMailCliente.java` Validación de datos de cliente
+- `ClienteAcesso.java` - Gestión de información del cliente registrado
+- `Pelicula.java` - Entidad de datos de películas
+- `Sala.java` - Entidad de salas con gestión de capacidad
+- `Sesion.java` - Entidad de sesiones con fecha, hora y precio
+- `Carrito.java` - Lógica de carrito de compra con cálculo de descuentos
+- `Ticket.java` - Entidad de entradas compradas
+- `GestorCine.java` - Controlador de lógica de negocio principal
+- `GestorTicket.java` - Gestor de persistencia de tickets
+- `EspectadoresSesion.java` - Registro de espectadores por sesión
+- `dniMailCliente.java` - Validador de datos de cliente
 
 ### Vista (`src/vista/`)
 
-Interfaz de usuario basada en consola:
+Capa de presentación basada en interfaz de consola:
 
-`Launcher.java` Punto de entrada de la aplicación con menús interactivos
+- `Launcher.java` - Punto de entrada de la aplicación con sistema de menús interactivos
 
 ### Controlador (`src/controlador/`)
 
-Capa intermedia que gestiona la lógica de entrada/salida y acceso a datos:
+Capa de control que gestiona la lógica de entrada/salida y acceso a datos:
 
-`ControladorEntradaYSalida.java` Lectura y validación de entrada del usuario (menús, números, textos, DNI)
-`ControladorDB.java` Conexión y operaciones con base de datos MySQL
-`Imprimir.java` Formateo y presentación de información en consola
+- `ControladorEntradaYSalida.java` - Validación y procesamiento de entradas del usuario
+- `ControladorDB.java` - Gestión de conexiones y operaciones con base de datos MySQL
+- `Imprimir.java` - Formateador y presentador de información en consola
 
 ## Flujo de Funcionamiento
 
-1. **Conexión a Base de Datos**: Al iniciar, el sistema intenta conectarse a la base de datos MySQL "cine_daw"
+1. **Conexión a Base de Datos**
+   - Establecimiento de conexión con MySQL al iniciar la aplicación
 
-2. **Autenticación**:
-   El usuario indica si tiene cuenta existente
-   Si no tiene cuenta, se realiza el registro con validación de datos
-   Si tiene cuenta, procede al login
+2. **Autenticación**
+   - Verificación de cuenta existente
+   - Proceso de registro con validación de datos para nuevos usuarios
+   - Sistema de login para usuarios registrados
 
-3. **Selección de Película**:
-   Se muestran las películas disponibles (con sesiones futuras)
-   El usuario selecciona una película
+3. **Selección de Película**
+   - Presentación de catálogo de películas disponibles con sesiones futuras
+   - Selección de película deseada
 
-4. **Selección de Fecha**:
-   Se muestran las fechas disponibles para la película seleccionada
-   El usuario elige una fecha
+4. **Selección de Fecha**
+   - Visualización de fechas disponibles para la película seleccionada
+   - Elección de fecha de función
 
-5. **Selección de Sesión**:
-   Se muestran las sesiones disponibles (horarios y salas)
-   El usuario selecciona una sesión y cantidad de entradas
-   Se verifica disponibilidad de asientos
+5. **Selección de Sesión**
+   - Presentación de sesiones disponibles con horarios y salas
+   - Selección de sesión y cantidad de entradas
+   - Verificación automática de disponibilidad de asientos
 
-6. **Carrito de Compra**:
-   Se pueden añadir más películas al carrito
-   El sistema calcula descuentos automáticamente
+6. **Carrito de Compra**
+   - Opción de añadir entradas de múltiples sesiones
+   - Cálculo automático de descuentos aplicables
 
-7. **Confirmación y Pago**:
-   Se muestra resumen de compra con descuentos e IVA
-   Se actualiza la base de datos con los datos de compra
-   Se genera y guarda el ticket
+7. **Confirmación y Pago**
+   - Generación de resumen detallado con descuentos e IVA
+   - Actualización transaccional de la base de datos
+   - Generación y almacenamiento de tickets
 
 ## Requisitos Técnicos
 
 ### Software Necesario
+- Java Development Kit (JDK) versión 8 o superior
+- MySQL Server
+- Driver JDBC para MySQL (mysql-connector-java)
 
-Java Development Kit (JDK) versión 8 o superior
-MySQL Server
-Driver JDBC para MySQL (mysqlconnectorjava)
+### Configuración de Base de Datos
 
-### Base de Datos
+- **Base de datos**: `cine_daw`
+- **Usuario**: `root`
+- **Contraseña**: (vacía por defecto)
+- **Host**: localhost
+- **Puerto**: 3306
 
-Base de datos MySQL: `cine_daw`
-Usuario: `root`
-Contraseña: (vacía por defecto)
-Host: localhost
-Puerto: 3306
+### Esquema de Base de Datos
 
-### Tablas Necesarias
-
-`Cliente` Almacena información de usuarios registrados
-`Pelicula` Catálogo de películas
-`Sala` Información de salas de proyección
-`Sesion` Sesiones de películas (fecha, hora, sala, precio, espectadores)
-`Compra` Registro de compras realizadas
+- `Cliente` - Información de usuarios registrados
+- `Pelicula` - Catálogo de películas
+- `Sala` - Información de salas de proyección
+- `Sesion` - Sesiones de películas (fecha, hora, sala, precio, aforo)
+- `Compra` - Registro de transacciones realizadas
+- `Entrada` - Detallede compras realizadas
 `Entrada` Detalles de entradas vendidas
+Instalación y Ejecución
 
-## Cómo Ejecutar
-
-1. Asegurarse de que MySQL está en ejecución
-2. Crear la base de datos `cine_daw` con las tablas necesarias
-3. Compilar el proyecto en Java
-4. Ejecutar la clase `Launcher.java` como aplicación principal
+1. Verificar que MySQL Server esté en ejecución
+2. Ejecutar el script SQL ubicado en `ScriptBD/CineDaw.sql` para crear la base de datos
+3. Compilar el proyecto Java
+4. Ejecutar la clase principal `Launcher.java`
+5. Navegar por la aplicación mediante los menús interactivos de consolal
 5. Seguir los menús de consola para navegar por la aplicación
+y Seguridad
 
-## Validaciones Implementadas
+- **DNI**: Validación de formato (9 caracteres)
+- **Email**: Validación de formato de correo electrónico
+- **Contraseña**: Encriptación mediante algoritmo AES
+- **Capacidad**: Verificación de disponibilidad de asientos antes de confirmar compra
+- **Sesiones**: Filtrado automático para mostrar únicamente sesiones futuras
+- **Unicidad**: Validación de DNI y email únicos en el sistema
+- **SQL Injection**: Uso de PreparedStatement para prevenir inyecciones SQL
+DupPolítica de Descuentos
 
-DNI: Exactamente 9 caracteres
-Email: Solo se aceptan direcciones de Gmail (@gmail.com)
-Contraseña: Se encripta con AES en base de datos
-Asientos: No se puede comprar más entradas que asientos disponibles
-Sesiones: Solo se muestran sesiones futuras
-Duplicados: Se valida que DNI y email no estén ya registrados
+El sistema implementa descuentos progresivos automáticos según el volumen de compra:
 
-## Sistema de Descuentos
+- **1 sesión**: Sin descuento
+- **2 sesiones**: 20% de descuento
+- **3 o más sesiones**: 30% de descuento
 
-El sistema aplica descuentos automáticos según la cantidad de sesiones compradas:
+Los descuentos se aplican sobre el subtotal previo al cálculo d
 
-1 sesión: 0% descuento
-2 sesiones: 20% descuento
-3 o más sesiones: 30% descuento
+El Características Técnicas Destacadas
 
-El descuento se aplica sobre el subtotal antes de calcular el IVA.
+- **Seguridad**: Implementación de encriptación AES para almacenamiento seguro de contraseñas
+- **Integridad de datos**: Uso de PreparedStatement para prevenir inyecciones SQL
+- **Validación temporal**: Filtrado automático de sesiones basado en fecha y hora actual
+- **Gestión de transacciones**: Limpieza automática del carrito tras completar o cancelar compras
+- **Persistencia**: Almacenamiento de tickets en sistema de archivos para registro permanente
 
-## Notas de Desarrollo
+## Tecnologías Utilizadas
 
-El proyecto utiliza encriptación AES para almacenar contraseñas de forma segura
-Las consultas a base de datos utilizan PreparedStatement para evitar inyección SQL
-Los horarios de películas se consideran únicamente si son posteriores a la hora actual
-El carrito se vacía automáticamente después de completar o cancelar una compra
-Los tickets se guardan en archivos de texto para referencia del cliente
-
-## Autores
+- **Lenguaje**: Java SE
+- **Base de Datos**: MySQL
+- **Arquitectura**: MVC (Modelo-Vista-Controlador)
+- **Conectividad**: JDBC
+- **Seguridad**: Encriptación AES
 
 Proyecto de equipo de desarrollo para la asignatura de DAW (Desarrollo de Aplicaciones Web)
